@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yoldoro - Klik Cepat!</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSS KHUSUS HALAMAN GAME AGAR BESAR & PAS DI TENGAH */
+        body {
+            height: 100vh;
+            overflow: hidden; /* Mengunci scroll agar pas satu layar */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px; /* Diperbesar agar lebih lega */
+            z-index: 1;
+            text-align: center;
+        }
+
+        /* HEADER GAME */
+        header h2 {
+            font-size: 1.8rem !important;
+            margin: 0;
+            color: var(--text-brown);
+        }
+
+        header p {
+            font-size: 0.8rem;
+            margin: 2px 0 10px 0;
+            opacity: 0.8;
+        }
+
+        /* CARD GAME - LEBIH MEWAH & BESAR */
+        .card {
+            background: var(--card-bg);
+            border-radius: 35px;
+            padding: 20px 22px !important; /* Padding lebih luas */
+            border: 6px solid var(--accent-yellow);
+            box-shadow: 0 10px 0px var(--border-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Jarak antar elemen lebih lega */
+        }
+
+        /* BOX SKOR & TIMER */
+        .game-header-box {
+            background: #FFFDF5;
+            border-radius: 20px;
+            padding: 10px 20px;
+            border: 2px dashed var(--accent-yellow);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        /* ARENA GAME (CANVAS) - LEBIH TINGGI */
+        .game-canvas {
+            width: 100%;
+            height: 380px; /* Ditinggikan agar area klik lebih luas */
+            background-color: #ffffff;
+            background-image: 
+                linear-gradient(rgba(255, 217, 102, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 217, 102, 0.2) 1px, transparent 1px);
+            background-size: 30px 30px;
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+            cursor: crosshair;
+            border: 3px solid var(--accent-yellow);
+        }
+
+        /* ITEM TELUR/BINTANG */
+        .spawn-item {
+            position: absolute;
+            width: 55px; /* Ukuran item sedikit diperbesar */
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+        }
+
+        .spawn-item:active { transform: scale(0.8); }
+        
+        /* OVERLAY GAME OVER */
+        .game-over-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 249, 227, 0.96);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 20px;
+        }
+
+        .game-over-overlay h2 { margin: 0; font-size: 1.8rem; color: var(--text-brown); }
+        
+        .btn-restart {
+            background: var(--accent-yellow);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 18px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-brown);
+            cursor: pointer;
+            box-shadow: 0 4px 0px var(--dark-yellow);
+            margin-top: 15px;
+        }
+
+        .btn-restart:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0px var(--dark-yellow);
+        }
+
+        /* TOMBOL BALIK FOKUS */
+        .game-btn-container { margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h2>MINI GAME YOLDORO</h2>
+            <p>Klik telur dan bintang untuk poin lebih banyak 💛</p>
+        </header>
+
+        <main class="card">
+            <div class="game-header-box">
+                <span>Skor: <span id="game-score">0</span></span>
+                <span>Sisa: <span id="game-timer">30</span>s ⏳</span>
+            </div>
+
+            <div class="game-canvas" id="canvas">
+                <div class="game-over-overlay" id="overlay">
+                    <h2 id="final-msg">Waktu Habis!</h2>
+                    <p style="font-size: 1.3rem; margin: 10px 0;">Skor kamu: <span id="final-score">0</span> 🥚</p>
+                    <button class="btn-restart" onclick="location.reload()">Main Lagi 🔄</button>
+                </div>
+            </div>
+
+            <div class="game-btn-container">
+                <button class="btn-game" style="width: 100%;" onclick="window.location.href='index.html'">Balik Fokus 💛</button>
+            </div>
+        </main>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
