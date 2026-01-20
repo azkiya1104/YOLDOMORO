@@ -8,13 +8,41 @@
 </head>
 <body>
     <div class="container">
+
+        <div id="modal-about" class="modal-overlay">
+            <div class="modal-card" style="width: 300px;"> <h2>Tentang Yoldoro</h2>
+                
+                <div style="text-align: left; font-size: 0.8rem; margin: 10px 0; line-height: 1.4;">
+                    <p>Aplikasi fokus bertema telur yang membantumu produktif dengan fitur:</p>
+                    <ul style="padding-left: 20px; margin: 5px 0;">
+                        <li><b>Timer Pomodoro:</b> Siklus otomatis Fokus & Rehat.</li>
+                        <li><b>Target Belajar:</b> Atur total durasi belajarmu.</li>
+                        <li><b>SoundCloud Player:</b> Musik Lofi langsung di aplikasi.</li>
+                        <li><b>Add Ur Song:</b> Simpan link lagu favoritmu (Auto-save).</li>
+                        <li><b>Custom Settings:</b> Bebas atur menit fokus & rehat.</li>
+                    </ul>
+                </div>
+
+                <hr style="border: 1px dashed var(--accent-yellow); margin: 15px 0;">
+                
+                <p style="font-size: 0.8rem;">
+                    Dibuat dengan 💛 oleh:<br>
+                    <b>Una (Kia)</b><br>
+                    <i>Informatics Engineering Student</i>
+                </p>
+                
+                <button onclick="closeModal('modal-about')" style="margin-top: 10px; width: 100%;">Tutup</button>
+            </div>
+        </div>
+
         <header>
-            <img src="assets/egg-icon.png" alt="logo" class="mini-egg">
             <h1>YOLDORO</h1>
             <p>Fokus bentar, rebahan bentar ✨</p>
         </header>
 
         <main class="card">
+            <button class="info-btn" onclick="showModal('modal-about')">i</button>
+
             <div class="egg-display">
                 <img src="assets/egg-focus.png" id="egg-image" alt="Telur">
             </div>
@@ -30,7 +58,7 @@
                 <button onclick="resetTimer()">Reset</button>
             </div>
 
-            <div class="progress-info" style="margin-top: 10px; font-weight: 600; color: #5D4037;">
+            <div class="progress-info">
                 Progres: <span id="current-progress">0</span> / <span id="max-target">0</span> Menit
             </div>
 
@@ -42,17 +70,23 @@
             </div>
 
             <div class="music-section">
-                <p>🎧 Study Sound</p>
+                <p>🎧 SoundCloud Player</p>
                 <select id="music-select">
-                    <option value="lofi">Lo-fi Chill</option>
-                    <option value="cafe">Cafe Ambience</option>
-                </select>
-                <input type="range" id="volume" min="0" max="1" step="0.1">
-            </div>
+                    </select>
 
-            <!-- <div class="cycle-counter" style="margin-top: 15px; font-size: 0.9rem; color: #8D6E63;">
-                 🍅 Sesi Selesai: <span id="cycle-display" style="font-weight: bold;">0</span>
-            </div> -->
+                <iframe 
+                    id="sc-widget" 
+                    src="https://w.soundcloud.com/player/?url=https://soundcloud.com/undefined&auto_play=false" 
+                    width="0" 
+                    height="0" 
+                    style="display:none;" 
+                    frameborder="no" 
+                    scrolling="no" 
+                    allow="autoplay">
+                </iframe>
+
+                <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5">
+            </div>
 
             <div class="game-btn-container">
                 <p style="margin-bottom: 8px;">😵 Jenuh?</p>
@@ -61,9 +95,30 @@
         </main>
 
         <footer>
-            Made with 💛 by Una
+            Made with 💛 by Kia
         </footer>
     </div>
+
+    <div id="modal-notif" class="modal-overlay">
+        <div class="modal-card">
+            <h2 id="modal-title">Sesi Selesai!</h2>
+            <p id="modal-message">Selamat, waktunya rehat sejenak.</p>
+            <button onclick="closeModal('modal-notif')">Siap!</button>
+        </div>
+    </div>
+
+    <div id="modal-add-song" class="modal-overlay">
+        <div class="modal-card">
+            <h2>Tambah Lagu</h2>
+            <input type="text" id="custom-name" placeholder="Nama Lagu">
+            <input type="text" id="custom-url" placeholder="Link SoundCloud">
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeModal('modal-add-song')">Batal</button>
+                <button onclick="saveCustomSong()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

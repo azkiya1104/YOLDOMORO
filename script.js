@@ -1,19 +1,29 @@
 let timer;
 let isRunning = false;
-let currentMode = 'fokus'; // Mode awal
-let totalSecondsPassed = 0; // Akumulasi total waktu (Fokus + Rehat) dalam detik
-let cycleCount = 0; // Menghitung jumlah sesi fokus yang selesai
+let currentMode = 'fokus';
+let totalSecondsPassed = 0;
+let widget;
 
-// Mengambil elemen dari HTML
+// Ambil Elemen
 const minutesDisplay = document.getElementById('minutes');
 const secondsDisplay = document.getElementById('seconds');
 const modeText = document.getElementById('mode-text');
 const eggImage = document.getElementById('egg-image');
-const cycleDisplay = document.getElementById('cycle-display');
 const currentProgressElem = document.getElementById('current-progress');
 const maxTargetElem = document.getElementById('max-target');
+const musicSelect = document.getElementById('music-select');
+const volumeSlider = document.getElementById('volume');
+const scIframe = document.getElementById('sc-widget');
 
-// Fungsi untuk mengambil nilai input dari user
+// Load SoundCloud API
+const scScript = document.createElement('script');
+scScript.src = "https://w.soundcloud.com/player/api.js";
+document.head.appendChild(scScript);
+
+scScript.onload = () => {
+    widget = SC.Widget(scIframe);
+};
+
 function getDuration() {
     return {
         focusMin: parseInt(document.getElementById('focus-input').value) || 15,
@@ -22,42 +32,33 @@ function getDuration() {
     };
 }
 
-// Inisialisasi waktu awal saat pertama kali dimuat
 let { focusMin } = getDuration();
 let timeLeft = focusMin * 60;
 
-// FUNGSI UTAMA: Update Tampilan Angka & Progres
 function updateDisplay() {
     let m = Math.floor(timeLeft / 60);
     let s = timeLeft % 60;
-    
-    // Format mm:ss
     minutesDisplay.textContent = m < 10 ? '0' + m : m;
     secondsDisplay.textContent = s < 10 ? '0' + s : s;
-    
-    // Update teks progres (X / Y Menit)
     updateProgressText();
 }
 
 function updateProgressText() {
     const { targetMin } = getDuration();
-    const currentMin = Math.floor(totalSecondsPassed / 60);
-    
-    if (currentProgressElem) currentProgressElem.innerText = currentMin;
-    if (maxTargetElem) maxTargetElem.innerText = targetMin;
+    currentProgressElem.innerText = Math.floor(totalSecondsPassed / 60);
+    maxTargetElem.innerText = targetMin;
 }
 
-// FUNGSI TIMER
 function startTimer() {
     if (isRunning) return;
     isRunning = true;
+    if (widget && musicSelect.value && musicSelect.value !== 'add-new') widget.play();
     
     timer = setInterval(() => {
         if (timeLeft > 0) {
             timeLeft--;
             updateDisplay();
         } else {
-            // Waktu habis, hentikan interval dan proses pindah sesi
             clearInterval(timer);
             isRunning = false;
             handleSessionEnd();
@@ -68,98 +69,138 @@ function startTimer() {
 function pauseTimer() {
     clearInterval(timer);
     isRunning = false;
+    if (widget) widget.pause();
 }
 
 function resetTimer() {
     pauseTimer();
     currentMode = 'fokus';
-    totalSecondsPassed = 0; 
-    cycleCount = 0;
-    
+    totalSecondsPassed = 0;
     const { focusMin } = getDuration();
     timeLeft = focusMin * 60;
-    
-    if (cycleDisplay) cycleDisplay.innerText = "0";
     modeText.innerText = "MODE: FOKUS";
-    modeText.style.color = "#5D4037";
-    eggImage.src = "assets/egg-focus.png"; 
-    
+    eggImage.src = "assets/egg-focus.png";
     updateDisplay();
 }
 
-// LOGIKA PINDAH SESI & CEK TARGET
 function handleSessionEnd() {
     const { focusMin, breakMin, targetMin } = getDuration();
     const targetSeconds = targetMin * 60;
     
-    // Bunyi Notifikasi
-    const bell = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
-    bell.play();
+    new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play();
 
     if (currentMode === 'fokus') {
-        // Selesai Fokus: Tambahkan waktu fokus ke akumulasi total
         totalSecondsPassed += (focusMin * 60);
         
-        // Cek apakah target belajar total sudah terpenuhi setelah fokus?
+        // Update display dulu supaya angka progres naik sebelum cek finish
+        updateDisplay(); 
+
         if (totalSecondsPassed >= targetSeconds) {
             finishLearning();
-            return;
+            return; 
         }
 
-        // Jika belum, lanjut ke Mode Rehat
         currentMode = 'rehat';
-        let sisaWaktu = targetSeconds - totalSecondsPassed;
-        // Ambil waktu rehat normal atau sisa target (mana yang lebih kecil)
-        timeLeft = Math.min(breakMin * 60, sisaWaktu); 
-        
-        // Update UI Mode Rehat
-        modeText.innerText = "MODE: REHAT (REBAHAN DULU 🍳)";
-        modeText.style.color = "#FF8A65";
-        eggImage.src = "assets/egg-rest.png"; // Gambar telur rebahan
-        
-        alert(`Sesi fokus selesai! Selamat rehat.`);
+        let sisaDetikKeTarget = targetSeconds - totalSecondsPassed;
+        timeLeft = Math.min(breakMin * 60, sisaDetikKeTarget); 
 
+        modeText.innerText = "MODE: REHAT 🍳";
+        eggImage.src = "assets/egg-rest.png";
+        showModal('modal-notif', 'Fokus Selesai!', 'Waktunya rehat sejenak.');
+        
     } else {
-        // Selesai Rehat: Tambahkan waktu rehat ke akumulasi total
         totalSecondsPassed += (breakMin * 60);
+        
+        // Update display dulu supaya angka progres jadi 2/2 sebelum tamat
+        updateDisplay(); 
 
-        // Cek lagi setelah rehat, apakah sudah mencapai target?
         if (totalSecondsPassed >= targetSeconds) {
             finishLearning();
-            return;
+            return; 
         }
 
-        // Jika belum, balik ke Mode Fokus
         currentMode = 'fokus';
-        let sisaWaktu = targetSeconds - totalSecondsPassed;
-        timeLeft = Math.min(focusMin * 60, sisaWaktu);
+        let sisaDetikKeTarget = targetSeconds - totalSecondsPassed;
+        timeLeft = Math.min(focusMin * 60, sisaDetikKeTarget);
 
-        // Update UI Mode Fokus
-        modeText.innerText = "MODE: FOKUS (MELEK LAGI 🤓)";
-        modeText.style.color = "#5D4037";
-        eggImage.src = "assets/egg-focus.png"; // Gambar telur kacamata
-        
-        alert("Waktu rehat habis! Ayo lanjut fokus.");
+        modeText.innerText = "MODE: FOKUS 🤓";
+        eggImage.src = "assets/egg-focus.png";
+        showModal('modal-notif', 'Rehat Selesai!', 'Ayo lanjut fokus!');
     }
 
-    updateDisplay();
-    startTimer(); // Jalankan mode berikutnya secara otomatis
+    // Jalankan timer otomatis untuk sesi berikutnya jika belum finish
+    isRunning = false; 
+    startTimer(); 
 }
 
-// Fungsi yang dipanggil saat total waktu (Fokus + Rehat) mencapai target
 function finishLearning() {
     isRunning = false;
     clearInterval(timer);
-    timeLeft = 0;
-    
-    // Update UI Selesai
     modeText.innerText = "Target Selesai! 🎉";
-    modeText.style.color = "#4CAF50";
-    eggImage.src = "assets/egg-finish.png"; // Gambar telur pecah/confetti
-    
-    updateDisplay();
-    alert("YAY! Target waktu belajar kamu sudah tercapai. Timer berhenti!");
+    eggImage.src = "assets/egg-finish.png";
+    showModal('modal-notif', 'YAY SELESAI!', 'Target belajarmu hari ini sudah tercapai. Keren!');
 }
 
-// Jalankan update tampilan pertama kali agar angka awal muncul
+// --- LOGIKA MODAL ---
+function showModal(id, title, msg) {
+    if (title) document.getElementById('modal-title').innerText = title;
+    if (msg) document.getElementById('modal-message').innerText = msg;
+    document.getElementById(id).style.display = 'flex';
+}
+
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+// --- LOGIKA LAGU & LOCAL STORAGE ---
+function saveCustomSong() {
+    const name = document.getElementById('custom-name').value;
+    const url = document.getElementById('custom-url').value;
+
+    if (name && url) {
+        let songs = JSON.parse(localStorage.getItem('yoldoro_songs')) || [];
+        songs.push({ name, url });
+        localStorage.setItem('yoldoro_songs', JSON.stringify(songs));
+        
+        updateMusicDropdown();
+        closeModal('modal-add-song');
+        document.getElementById('custom-name').value = '';
+        document.getElementById('custom-url').value = '';
+    }
+}
+
+function updateMusicDropdown() {
+    musicSelect.innerHTML = `
+        <option value="">None</option>
+        <option value="https://soundcloud.com/lofi_girl/sets/lofi-girl-beats-to-relax-study">Lo-fi Girl Radio 🎶</option>
+        <option value="https://soundcloud.com/grant-lewers-185714392/cafe-leblanc-coffee-shop-ambience-smooth-jazz-persona-music-rain-to-study-relax-sleep?si=208250b99b7947869a4456a8b3b769eb&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">Cafe Ambience ☕</option>
+        <option value="add-new">➕ Add SoundCloud Link...</option>
+    `;
+
+    const songs = JSON.parse(localStorage.getItem('yoldoro_songs')) || [];
+    songs.forEach(song => {
+        const opt = document.createElement('option');
+        opt.value = song.url;
+        opt.text = `🎵 ${song.name}`;
+        musicSelect.add(opt, musicSelect.options[musicSelect.options.length - 1]);
+    });
+}
+
+musicSelect.addEventListener('change', function() {
+    if (this.value === 'add-new') {
+        showModal('modal-add-song');
+        this.value = ""; 
+    } else if (this.value) {
+        widget.load(this.value, { auto_play: true, show_artwork: false });
+    } else {
+        widget.pause();
+    }
+});
+
+volumeSlider.addEventListener('input', function() {
+    if (widget) widget.setVolume(this.value * 100);
+});
+
+// Jalankan saat pertama load
+updateMusicDropdown();
 updateDisplay();

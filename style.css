@@ -58,11 +58,63 @@ body::after {
     width: 100%;
     max-width: 330px;
     z-index: 1;
+    margin-top: -10px; 
+}
+
+.container {
+    text-align: center;
+    width: 100%;
+    max-width: 330px;
+    z-index: 1;
+    margin-top: -20px; /* Dikurangi agar YOLDORO tidak terlalu mepet ke atas */
+}
+
+/* Tombol Info Bulat */
+.info-btn {
+    position: absolute;
+    top: 15px;     
+    right: 15px;    
+    width: 25px;
+    height: 25px;
+    border-radius: 50%; 
+    background: var(--accent-yellow);
+    color: var(--text-brown);
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 0px var(--dark-yellow);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    line-height: 1;
+}
+
+.info-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0px var(--dark-yellow);
+}
+
+/* Styling list di dalam modal agar rapi */
+.modal-card ul {
+    text-align: left;
+    color: var(--text-brown);
+    margin-bottom: 10px;
+}
+
+.modal-card li {
+    margin-bottom: 5px;
+}
+
+.modal-card b {
+    color: var(--dark-yellow); /* Memberi warna kuning pada nama fitur */
 }
 
 header h1 {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     margin: 0;
+    padding-top: 10px; 
 }
 
 header p {
@@ -79,9 +131,10 @@ header p {
 
 /* Card Utama */
 .card {
+    position: relative; 
     background: var(--card-bg);
     border-radius: 30px;
-    padding: 12px 18px;
+    padding: 12px 18px; 
     border: 5px solid var(--accent-yellow);
     box-shadow: 0 8px 0px var(--border-soft);
     display: flex;
@@ -195,6 +248,19 @@ select {
     background-position: right 10px center;
 }
 
+/* Input link lagu kustom */
+#custom-song-url {
+    width: 100%;
+    padding: 8px;
+    border-radius: 10px;
+    border: 2px solid var(--accent-yellow);
+    background-color: #FFF9E3;
+    color: var(--text-brown);
+    font-family: 'Fredoka', sans-serif;
+    outline: none;
+    box-sizing: border-box;
+}
+
 input[type=range] {
     width: 80%;
     accent-color: var(--dark-yellow);
@@ -212,4 +278,73 @@ footer {
     margin-top: 10px;
     font-size: 0.7rem;
     color: #A0887E;
+}
+
+/* --- MODAL / POP-UP CUSTOM --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-card {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 30px;
+    border: 5px solid var(--accent-yellow);
+    width: 280px;
+    text-align: center;
+    box-shadow: 0 10px 0px var(--border-soft);
+    animation: popIn 0.3s ease;
+}
+
+.modal-card h2 {
+    margin-top: 0;
+    color: var(--text-brown);
+}
+
+.modal-card input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 12px;
+    border: 2px solid var(--accent-yellow);
+    background: var(--bg-light);
+    font-family: 'Fredoka', sans-serif;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.modal-buttons button {
+    flex: 1;
+}
+
+.btn-cancel {
+    background: #FFAB91 !important;
+    box-shadow: 0 3px 0px #D84315 !important;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Tambahan perbaikan visual untuk progres */
+.progress-info {
+    margin-top: 10px;
+    font-weight: 600;
+    color: var(--text-brown);
 }

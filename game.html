@@ -6,10 +6,10 @@
     <title>Yoldoro - Klik Cepat!</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* CSS KHUSUS HALAMAN GAME AGAR BESAR & PAS DI TENGAH */
+        
         body {
             height: 100vh;
-            overflow: hidden; /* Mengunci scroll agar pas satu layar */
+            overflow: hidden; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -18,7 +18,7 @@
 
         .container {
             width: 100%;
-            max-width: 400px; /* Diperbesar agar lebih lega */
+            max-width: 400px; 
             z-index: 1;
             text-align: center;
         }
@@ -36,16 +36,16 @@
             opacity: 0.8;
         }
 
-        /* CARD GAME - LEBIH MEWAH & BESAR */
+        
         .card {
             background: var(--card-bg);
             border-radius: 35px;
-            padding: 20px 22px !important; /* Padding lebih luas */
+            padding: 20px 22px !important;
             border: 6px solid var(--accent-yellow);
             box-shadow: 0 10px 0px var(--border-soft);
             display: flex;
             flex-direction: column;
-            gap: 15px; /* Jarak antar elemen lebih lega */
+            gap: 15px; 
         }
 
         /* BOX SKOR & TIMER */
@@ -63,7 +63,7 @@
         /* ARENA GAME (CANVAS) - LEBIH TINGGI */
         .game-canvas {
             width: 100%;
-            height: 380px; /* Ditinggikan agar area klik lebih luas */
+            height: 380px; 
             background-color: #ffffff;
             background-image: 
                 linear-gradient(rgba(255, 217, 102, 0.2) 1px, transparent 1px),
@@ -79,7 +79,7 @@
         /* ITEM TELUR/BINTANG */
         .spawn-item {
             position: absolute;
-            width: 55px; /* Ukuran item sedikit diperbesar */
+            width: 55px; 
             height: auto;
             cursor: pointer;
             transition: transform 0.1s;
